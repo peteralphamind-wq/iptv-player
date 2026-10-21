@@ -46,8 +46,9 @@ systemctl daemon-reload
 systemctl enable --now iptv-player >/dev/null
 systemctl restart iptv-player
 
-if command -v ufw >/dev/null && ufw status | grep -q active; then
-  ufw allow "$PORT/tcp" >/dev/null
+# Nur über Tailscale freigeben, nicht fürs ganze Internet (der Server enthält einen Proxy)
+if command -v ufw >/dev/null && ufw status | grep -q active && ip link show tailscale0 >/dev/null 2>&1; then
+  ufw allow in on tailscale0 to any port "$PORT" proto tcp >/dev/null
 fi
 
 echo
