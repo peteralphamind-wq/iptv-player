@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>IPTV Player</title>
+  <meta name="theme-color" content="#0f1115">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="IPTV">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="btnPlaylists" class="pill" aria-label="Playlists">
+      <span id="currentPlaylistName">Keine Playlist</span> ▾
+    </button>
+    <button id="btnReload" class="icon" aria-label="Playlist neu laden" title="Neu laden">⟳</button>
+  </header>
+
+  <section id="player" class="player hidden">
+    <video id="video" playsinline controls autoplay></video>
+    <div class="player-bar">
+      <div class="now">
+        <img id="nowLogo" alt="">
+        <span id="nowName"></span>
+      </div>
+      <div class="player-actions">
+        <button id="btnFav" class="icon" aria-label="Favorit">☆</button>
+        <button id="btnVlc" class="small">VLC</button>
+        <button id="btnClose" class="icon" aria-label="Schliessen">✕</button>
+      </div>
+    </div>
+    <div id="playerError" class="player-error hidden"></div>
+  </section>
+
+  <section class="filters">
+    <input id="search" type="search" placeholder="Sender suchen…" autocomplete="off">
+    <div id="groups" class="groups"></div>
+  </section>
+
+  <main id="list" class="list"></main>
+
+  <div id="empty" class="empty hidden">
+    <p>Noch keine Playlist gespeichert.</p>
+    <button id="btnAddFirst" class="primary">M3U-Link hinzufügen</button>
+  </div>
+
+  <!-- Playlist-Verwaltung -->
+  <dialog id="dlgPlaylists">
+    <div class="sheet">
+      <h2>Playlists</h2>
+      <ul id="playlistList" class="playlist-list"></ul>
+      <button id="btnAdd" class="primary">+ Neue Playlist</button>
+      <button class="ghost" data-close>Schliessen</button>
+    </div>
+  </dialog>
+
+  <dialog id="dlgAdd">
+    <form id="formAdd" class="sheet" method="dialog">
+      <h2>Playlist hinzufügen</h2>
+      <label>Name
+        <input id="addName" type="text" placeholder="z. B. Mein IPTV">
+      </label>
+      <label>M3U-Link
+        <input id="addUrl" type="url" inputmode="url" placeholder="https://…/playlist.m3u" autocapitalize="off" autocorrect="off" spellcheck="false">
+      </label>
+      <details>
+        <summary>Link funktioniert nicht? Datei oder Text verwenden</summary>
+        <label>M3U-Datei
+          <input id="addFile" type="file" accept=".m3u,.m3u8,audio/x-mpegurl,application/vnd.apple.mpegurl,text/plain">
+        </label>
+        <label>…oder M3U-Inhalt einfügen
+          <textarea id="addText" rows="4" placeholder="#EXTM3U&#10;#EXTINF:-1,Sender&#10;http://…"></textarea>
+        </label>
+      </details>
+      <p id="addStatus" class="status"></p>
+      <button id="btnSave" class="primary" type="submit" value="save">Speichern & laden</button>
+      <button class="ghost" type="button" data-close>Abbrechen</button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
