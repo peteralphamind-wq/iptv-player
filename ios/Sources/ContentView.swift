@@ -11,8 +11,9 @@ struct ContentView: View {
     @State private var group = Filter.all
     @State private var showAdd = false
     @State private var showPlaylists = false
+    @State private var showGroups = false
 
-    private var groups: [String] {
+    private var allGroups: [String] {
         var seen = Set<String>()
         return store.channels.compactMap { ch in
             guard !ch.group.isEmpty, seen.insert(ch.group).inserted else { return nil }
@@ -20,11 +21,13 @@ struct ContentView: View {
         }
     }
 
+    private var groups: [String] { allGroups.filter { !store.isHidden($0) } }
+
     private var filtered: [Channel] {
         let query = search.trimmingCharacters(in: .whitespaces)
         return store.channels.filter { ch in
             switch group {
-            case Filter.all: break
+            case Filter.all: if store.isHidden(ch.group) { return false }
             case Filter.favorites: if !store.isFavorite(ch) { return false }
             default: if ch.group != group { return false }
             }
@@ -50,12 +53,20 @@ struct ContentView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        Task { await store.loadActive(refresh: true) }
+                    Menu {
+                        Button { showGroups = true } label: {
+                            Label("Gruppen auswählen", systemImage: "line.3.horizontal.decrease.circle")
+                        }
+                        .disabled(allGroups.isEmpty)
+                        Button {
+                            Task { await store.loadActive(refresh: true) }
+                        } label: {
+                            Label("Playlist neu laden", systemImage: "arrow.clockwise")
+                        }
+                        .disabled(store.active == nil || store.isLoading)
                     } label: {
-                        Label("Neu laden", systemImage: "arrow.clockwise")
+                        Label("Mehr", systemImage: "ellipsis.circle")
                     }
-                    .disabled(store.active == nil || store.isLoading)
                 }
             }
             .overlay {
@@ -67,6 +78,7 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showAdd) { AddPlaylistView() }
             .sheet(isPresented: $showPlaylists) { PlaylistsView(showAdd: $showAdd) }
+            .sheet(isPresented: $showGroups) { GroupPickerView(groups: allGroups, channels: store.channels) }
             .alert("Hinweis", isPresented: Binding(
                 get: { store.errorMessage != nil },
                 set: { if !$0 { store.errorMessage = nil } }
@@ -76,6 +88,7 @@ struct ContentView: View {
                 Text(store.errorMessage ?? "")
             }
             .onChange(of: store.activeID) { _ in group = Filter.all }
+            .onAppear { if !store.favorites.isEmpty { group = Filter.favorites } }
         }
     }
 

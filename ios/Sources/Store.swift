@@ -8,6 +8,7 @@ final class Store: ObservableObject {
     @Published private(set) var activeID: UUID?
     @Published private(set) var channels: [Channel] = []
     @Published private(set) var favorites: Set<String> = []
+    @Published private(set) var hiddenGroups: Set<String> = []
     @Published private(set) var isLoading = false
     @Published var errorMessage: String?
 
@@ -20,6 +21,7 @@ final class Store: ObservableObject {
         }
         activeID = defaults.string(forKey: "activeID").flatMap(UUID.init(uuidString:)) ?? playlists.first?.id
         favorites = Set(defaults.stringArray(forKey: "favorites") ?? [])
+        hiddenGroups = Set(defaults.stringArray(forKey: "hiddenGroups") ?? [])
         Task { await loadActive() }
     }
 
@@ -118,12 +120,27 @@ final class Store: ObservableObject {
         save()
     }
 
+    // MARK: Gruppen ein- und ausblenden
+
+    func isHidden(_ group: String) -> Bool { hiddenGroups.contains(group) }
+
+    func setGroup(_ group: String, visible: Bool) {
+        if visible { hiddenGroups.remove(group) } else { hiddenGroups.insert(group) }
+        save()
+    }
+
+    func setGroups(_ groups: [String], visible: Bool) {
+        if visible { hiddenGroups.subtract(groups) } else { hiddenGroups.formUnion(groups) }
+        save()
+    }
+
     // MARK: Speicher und Netz
 
     private func save() {
         defaults.set(try? JSONEncoder().encode(playlists), forKey: "playlists")
         defaults.set(activeID?.uuidString, forKey: "activeID")
         defaults.set(Array(favorites), forKey: "favorites")
+        defaults.set(Array(hiddenGroups), forKey: "hiddenGroups")
     }
 
     private var directory: URL {
