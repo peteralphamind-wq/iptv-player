@@ -149,12 +149,24 @@ function toast(msg) {
 
 // ---------- Laden ----------
 
-async function fetchPlaylist(url) {
+// Browser blockieren http-Abrufe von https-Seiten (Mixed Content),
+// darum zuerst dieselbe Adresse über https versuchen.
+function secureUrl(url) {
   if (location.protocol === 'https:' && url.startsWith('http://')) {
-    // Browser blockieren http-Abrufe von https-Seiten (Mixed Content)
-    throw new Error('MIXED');
+    return 'https://' + url.slice(7);
   }
-  const res = await fetch(url, { cache: 'no-store' });
+  return url;
+}
+
+async function fetchPlaylist(url) {
+  const target = secureUrl(url);
+  let res;
+  try {
+    res = await fetch(target, { cache: 'no-store' });
+  } catch (err) {
+    if (target !== url) throw new Error('MIXED');
+    throw err;
+  }
   if (!res.ok) throw new Error('HTTP ' + res.status);
   const text = await res.text();
   if (!text.includes('#EXTINF') && !text.includes('#EXTM3U')) {
@@ -165,7 +177,7 @@ async function fetchPlaylist(url) {
 
 function describeFetchError(err) {
   if (err.message === 'MIXED') {
-    return 'Der Link beginnt mit http:// – Safari lädt ihn hier nicht direkt. Lade die M3U-Datei herunter und wähle sie unten unter „Datei oder Text verwenden“ aus.';
+    return 'Der Link beginnt mit http:// und dein Anbieter bietet ihn nicht über https an, darum blockiert Safari ihn hier. Öffne den Link in Safari, damit die Datei heruntergeladen wird, und wähle sie unten bei „M3U-Datei“ aus.';
   }
   if (err instanceof TypeError) {
     return 'Der Server erlaubt keinen direkten Abruf aus dem Browser (CORS). Lade die M3U-Datei herunter und wähle sie unten aus, oder füge den Inhalt ein.';
@@ -331,12 +343,9 @@ function play(ch) {
   if (hls) { hls.destroy(); hls = null; }
   video.removeAttribute('src');
 
-  const url = ch.url;
+  // Xtream-Live-Streams (.ts) kann Safari nicht abspielen, die .m3u8-Variante schon
+  const url = secureUrl(ch.url).replace(/(\/live\/[^?#]+\/\d+)\.ts(?=$|\?)/i, '$1.m3u8');
   const isHls = /\.m3u8(\?|$)/i.test(url);
-
-  if (location.protocol === 'https:' && url.startsWith('http://')) {
-    showPlayerError('Dieser Sender läuft über http:// und wird von Safari in der Web-App blockiert. Tippe auf „VLC“, um ihn in der VLC-App zu öffnen.');
-  }
 
   if (video.canPlayType('application/vnd.apple.mpegurl')) {
     // iPhone/iPad/Safari: HLS nativ
