@@ -1,0 +1,39 @@
+name: IPTVPlayer
+options:
+  bundleIdPrefix: ch.gsponer
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  IPTVPlayer:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    scheme: {}
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: IPTV
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        UILaunchScreen: {}
+        UIBackgroundModes: [audio]
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # IPTV-Anbieter liefern fast immer über http – das muss erlaubt sein
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ch.gsponer.iptvplayer
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"

@@ -1,0 +1,59 @@
+name: iOS-App bauen
+
+on:
+  push:
+    branches: [main]
+    paths: ['ios/**', '.github/workflows/ios.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: XcodeGen installieren
+        run: brew install xcodegen
+
+      - name: Xcode-Projekt erzeugen
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: App bauen (unsigniert)
+        working-directory: ios
+        run: |
+          xcodebuild build \
+            -project IPTVPlayer.xcodeproj \
+            -scheme IPTVPlayer \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            | xcpretty || exit ${PIPESTATUS[0]}
+
+      - name: IPA packen
+        working-directory: ios
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/IPTVPlayer.app Payload/
+          zip -qry IPTVPlayer.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IPTVPlayer-ipa
+          path: ios/IPTVPlayer.ipa
+
+      - name: Als Download veröffentlichen
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ios-latest
+          name: IPTV iOS-App (neuester Stand)
+          body: |
+            Unsignierte IPA-Datei der IPTV-App. Installation mit Sideloadly oder AltStore
+            (kostenlose Apple-ID genügt, muss dann alle 7 Tage neu signiert werden).
+          files: ios/IPTVPlayer.ipa
+          make_latest: true

@@ -36,3 +36,14 @@ Lösung: die App über einen Rechner zu Hause per http ausliefern und mit Tailsc
 2. Im Ordner starten: `python3 server.py` (Windows: `py server.py`). Der Rechner muss eingeschaltet bleiben.
 3. iPhone mit Tailscale verbinden und in Safari öffnen: `http://<Tailscale-Name-des-Rechners>:8080/`
 4. Teilen → Zum Home-Bildschirm. Den M3U-Link einfach einfügen – der Server holt die Playlist ab.
+
+## Native iOS-App (Ordner `ios/`)
+SwiftUI-App mit M3U-Link, Xtream-Codes-Zugang oder Datei-Import, Favoriten, Suche, Gruppen und
+System-Player (Vollbild, Bild-in-Bild, AirPlay). Sie darf http-Streams laden, darum funktionieren
+auch Anbieter ohne https.
+
+Gebaut wird automatisch von GitHub Actions (macOS) bei jeder Änderung in `ios/`.
+Die fertige `IPTVPlayer.ipa` liegt unter **Releases → ios-latest**.
+
+Installieren ohne Mac: [Sideloadly](https://sideloadly.io) (Windows oder Mac) oder AltStore,
+mit kostenloser Apple-ID (alle 7 Tage neu signieren) oder Entwickler-Account (1 Jahr).
