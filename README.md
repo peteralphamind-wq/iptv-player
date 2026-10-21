@@ -20,6 +20,10 @@ Settings → Pages → Source: „Deploy from a branch“, Branch `main`, Ordner
 Safari blockiert http-Playlists und -Streams auf https-Seiten wie GitHub Pages.
 Lösung: die App über einen Rechner zu Hause per http ausliefern und mit Tailscale erreichen.
 
+**Linux-Server (ein Befehl, läuft danach dauerhaft):**
+`curl -fsSL https://raw.githubusercontent.com/peteralphamind-wq/iptv-player/main/install.sh | sudo bash`
+
+**Andere Rechner von Hand:**
 1. Repo auf den Rechner laden (Code → Download ZIP, entpacken). Python 3 muss installiert sein
    (Mac/Linux: vorhanden, Windows: python.org).
 2. Im Ordner starten: `python3 server.py` (Windows: `py server.py`). Der Rechner muss eingeschaltet bleiben.
