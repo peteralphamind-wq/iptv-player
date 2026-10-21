@@ -3,7 +3,7 @@
 
 Liefert die App über http aus, damit Safari die http-Playlists und -Streams
 der Anbieter nicht blockiert, und holt Playlists stellvertretend ab
-(/proxy?url=…), damit der Browser nicht an CORS scheitert.
+(/proxy.php?url=…), damit der Browser nicht an CORS scheitert.
 
 Start:   python3 server.py          (Port 8080)
          python3 server.py 9000     (anderer Port)
@@ -28,9 +28,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
-        if parsed.path.endswith('/proxy'):
+        if parsed.path.endswith(('/proxy', '/proxy.php')):
             return self.proxy(urllib.parse.parse_qs(parsed.query).get('url', [''])[0])
-        if parsed.path.endswith('.py'):
+        if parsed.path.endswith(('.py', '.sh')):
             return self.send_error(404)
         return super().do_GET()
 

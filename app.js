@@ -161,8 +161,8 @@ function secureUrl(url) {
 async function fetchPlaylist(url) {
   let res;
   if (location.protocol === 'http:') {
-    // Über den Heimserver (server.py): Playlist stellvertretend abholen lassen
-    res = await fetch('proxy?url=' + encodeURIComponent(url), { cache: 'no-store' }).catch(() => null);
+    // Über den eigenen Server (proxy.php oder server.py): Playlist stellvertretend abholen lassen
+    res = await fetch('proxy.php?url=' + encodeURIComponent(url), { cache: 'no-store' }).catch(() => null);
     if (!res || !res.ok) res = await fetch(url, { cache: 'no-store' });
   } else {
     const target = secureUrl(url);

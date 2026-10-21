@@ -16,6 +16,13 @@ Playlists, Favoriten und der zuletzt geladene Inhalt werden nur auf dem Gerät g
 ## Veröffentlichen mit GitHub Pages
 Settings → Pages → Source: „Deploy from a branch“, Branch `main`, Ordner `/ (root)`.
 
+## Webhosting mit PHP (z. B. Hostpoint)
+Diese Dateien in einen Ordner der eigenen Domain hochladen (z. B. per FTP oder Dateimanager):
+`index.html app.js styles.css sw.js manifest.json proxy.php icon-180.png icon-192.png icon-512.png`
+Dann die Seite mit **http://** aufrufen (nicht https) und zum Home-Bildschirm hinzufügen.
+„HTTPS erzwingen“ darf für diese Domain/Subdomain nicht aktiv sein.
+`proxy.php` holt die Playlist ab und gibt nur echte M3U-Playlists weiter.
+
 ## Anbieter mit http:// (z. B. Xtream-Links mit get.php)
 Safari blockiert http-Playlists und -Streams auf https-Seiten wie GitHub Pages.
 Lösung: die App über einen Rechner zu Hause per http ausliefern und mit Tailscale erreichen.
