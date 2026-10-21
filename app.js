@@ -159,13 +159,19 @@ function secureUrl(url) {
 }
 
 async function fetchPlaylist(url) {
-  const target = secureUrl(url);
   let res;
-  try {
-    res = await fetch(target, { cache: 'no-store' });
-  } catch (err) {
-    if (target !== url) throw new Error('MIXED');
-    throw err;
+  if (location.protocol === 'http:') {
+    // Über den Heimserver (server.py): Playlist stellvertretend abholen lassen
+    res = await fetch('proxy?url=' + encodeURIComponent(url), { cache: 'no-store' }).catch(() => null);
+    if (!res || !res.ok) res = await fetch(url, { cache: 'no-store' });
+  } else {
+    const target = secureUrl(url);
+    try {
+      res = await fetch(target, { cache: 'no-store' });
+    } catch (err) {
+      if (target !== url) throw new Error('MIXED');
+      throw err;
+    }
   }
   if (!res.ok) throw new Error('HTTP ' + res.status);
   const text = await res.text();

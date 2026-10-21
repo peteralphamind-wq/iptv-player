@@ -15,3 +15,13 @@ Playlists, Favoriten und der zuletzt geladene Inhalt werden nur auf dem Gerät g
 
 ## Veröffentlichen mit GitHub Pages
 Settings → Pages → Source: „Deploy from a branch“, Branch `main`, Ordner `/ (root)`.
+
+## Anbieter mit http:// (z. B. Xtream-Links mit get.php)
+Safari blockiert http-Playlists und -Streams auf https-Seiten wie GitHub Pages.
+Lösung: die App über einen Rechner zu Hause per http ausliefern und mit Tailscale erreichen.
+
+1. Repo auf den Rechner laden (Code → Download ZIP, entpacken). Python 3 muss installiert sein
+   (Mac/Linux: vorhanden, Windows: python.org).
+2. Im Ordner starten: `python3 server.py` (Windows: `py server.py`). Der Rechner muss eingeschaltet bleiben.
+3. iPhone mit Tailscale verbinden und in Safari öffnen: `http://<Tailscale-Name-des-Rechners>:8080/`
+4. Teilen → Zum Home-Bildschirm. Den M3U-Link einfach einfügen – der Server holt die Playlist ab.

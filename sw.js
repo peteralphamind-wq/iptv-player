@@ -1,5 +1,5 @@
 // Speichert nur die App-Hülle zwischen; Streams und Playlists laufen immer übers Netz.
-const CACHE = 'iptv-shell-v3';
+const CACHE = 'iptv-shell-v4';
 const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'manifest.json', 'icon-180.png'];
 
 self.addEventListener('install', (e) => {
